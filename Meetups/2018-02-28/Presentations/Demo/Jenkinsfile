@@ -1,0 +1,16 @@
+node('nbs') {
+    env.WORKSPACE = pwd()
+    stage('Checkout') {
+        checkout poll: false, scm: [$class: 'GitSCM', branches: [[name: '*/master']],
+                                    doGenerateSubmoduleConfigurations: false,
+                                    extensions: [[$class: 'SparseCheckoutPaths', sparseCheckoutPaths: [[path: 'wbt']]]],
+                                    submoduleCfg: [],
+                                    userRemoteConfigs: [[credentialsId: '14ba797f-4c5e-44c7-b895-3ffb3a3a6531', name: 'origin',
+                                                         url: 'git@gitlab.iavgroup.local:tm-t/tm-t2/DKSW/iav-debo.git']]]
+    }
+    stage('Create') {
+        dir('wbt') {
+            jobDsl removedJobAction: 'DISABLE', targets: 'generator.groovy'
+        }
+    }
+}
